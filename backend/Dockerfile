@@ -1,5 +1,4 @@
 # Backend Dockerfile
-
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -31,6 +30,7 @@ COPY . .
 
 ENV PYTHONUNBUFFERED=1
 
-EXPOSE 8000
+EXPOSE 8501
 
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Запускаем и бэкенд и фронтенд одновременно
+CMD sh -c "uvicorn backend.main:app --host 0.0.0.0 --port 8000 & streamlit run app.py --server.port=8501 --server.address=0.0.0.0"
