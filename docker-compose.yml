@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: flights_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      # Монтируем только код проекта, а не весь каталог /app
+      - ./backend:/app/backend
+      - ./flights:/app/flights
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: flights_frontend
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    depends_on:
+      - backend
+    environment:
+      BACKEND_URL: "http://backend:8000"
+    volumes:
+      # Монтируем только нужные файлы фронта, чтобы не перетирать Python-пакеты
+      - ./app.py:/app/app.py
+      - ./.env:/app/.env
+    restart: unless-stopped
